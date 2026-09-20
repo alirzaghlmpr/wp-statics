@@ -1,0 +1,757 @@
+/*
+ * WP Statics admin UI.
+ * Everything is scoped under .wps-app so nothing leaks into the rest of wp-admin.
+ * Channel colours arrive as an inline custom property (--c) from PHP/JS.
+ */
+
+@font-face {
+	font-family: 'WPS Vazirmatn';
+	src: url('../fonts/Vazirmatn-variable.woff2') format('woff2');
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+.wps-app {
+	--wps-ink: #17212f;
+	--wps-muted: #5b6675;
+	--wps-line: #e3e6eb;
+	--wps-line-soft: #eef0f3;
+	--wps-surface: #ffffff;
+	--wps-wash: #f6f7f9;
+	--wps-accent: #0b7a85;
+	--wps-accent-strong: #095f68;
+	--wps-accent-tint: #e6f4f5;
+	--wps-warn-tint: #fff4e0;
+	--wps-warn-ink: #7a4b00;
+	--wps-good: #1a7f4b;
+	--wps-r-panel: 12px;
+	--wps-r-ctl: 8px;
+
+	max-width: 1200px;
+	margin: 16px 20px 40px 20px;
+	color: var(--wps-ink);
+	font-family: 'WPS Vazirmatn', Tahoma, 'Segoe UI', system-ui, sans-serif;
+	font-size: 14px;
+	line-height: 1.7;
+}
+
+.wps-app *,
+.wps-app *::before,
+.wps-app *::after {
+	box-sizing: border-box;
+}
+
+.wps-app :focus-visible {
+	outline: 2px solid var(--wps-accent);
+	outline-offset: 2px;
+}
+
+/* ---------- Page header ---------- */
+
+.wps-app .wps-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px 24px;
+	margin-bottom: 20px;
+}
+
+.wps-app .wps-head h1 {
+	margin: 0;
+	padding: 0;
+	font-family: inherit;
+	font-size: 22px;
+	font-weight: 700;
+	line-height: 1.4;
+	color: var(--wps-ink);
+}
+
+.wps-app .wps-head__desc {
+	margin: 4px 0 0;
+	max-width: 62ch;
+	color: var(--wps-muted);
+	font-size: 13px;
+}
+
+.wps-app .wps-head__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+}
+
+/* ---------- Date range: segmented control ---------- */
+
+.wps-app .wps-range-wrap {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+}
+
+.wps-app .wps-range {
+	display: inline-flex;
+	padding: 3px;
+	background: var(--wps-wash);
+	border: 1px solid var(--wps-line);
+	border-radius: 10px;
+}
+
+.wps-app .wps-range a {
+	padding: 4px 14px;
+	border-radius: var(--wps-r-ctl);
+	color: var(--wps-muted);
+	font-size: 13px;
+	font-weight: 500;
+	text-decoration: none;
+	white-space: nowrap;
+	transition: color 0.15s, background-color 0.15s;
+}
+
+.wps-app .wps-range a:hover {
+	color: var(--wps-ink);
+}
+
+.wps-app .wps-range a.is-active {
+	background: var(--wps-surface);
+	color: var(--wps-ink);
+	font-weight: 600;
+	box-shadow: 0 1px 2px rgba(23, 33, 47, 0.1);
+}
+
+.wps-app .wps-range__custom {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+}
+
+.wps-app .wps-range__custom label {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--wps-muted);
+	font-size: 13px;
+}
+
+/* ---------- Buttons ---------- */
+
+.wps-app .wps-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 36px;
+	padding: 0 14px;
+	border: 1px solid var(--wps-line);
+	border-radius: var(--wps-r-ctl);
+	background: var(--wps-surface);
+	color: var(--wps-ink);
+	font: inherit;
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1;
+	text-decoration: none;
+	cursor: pointer;
+	transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+}
+
+.wps-app .wps-btn:hover {
+	border-color: var(--wps-accent);
+	color: var(--wps-accent-strong);
+}
+
+.wps-app .wps-btn svg {
+	width: 16px;
+	height: 16px;
+	flex: none;
+}
+
+.wps-app .wps-btn--primary {
+	background: var(--wps-accent);
+	border-color: var(--wps-accent);
+	color: #fff;
+}
+
+.wps-app .wps-btn--primary:hover {
+	background: var(--wps-accent-strong);
+	border-color: var(--wps-accent-strong);
+	color: #fff;
+}
+
+/* ---------- Notes ---------- */
+
+.wps-app .wps-note {
+	margin: 0 0 16px;
+	padding: 9px 14px;
+	border-radius: var(--wps-r-ctl);
+	background: var(--wps-accent-tint);
+	color: #0a5058;
+	font-size: 13px;
+}
+
+.wps-app .wps-note--warn {
+	background: var(--wps-warn-tint);
+	color: var(--wps-warn-ink);
+}
+
+/* ---------- Panels ---------- */
+
+.wps-app .wps-panel {
+	background: var(--wps-surface);
+	border: 1px solid var(--wps-line);
+	border-radius: var(--wps-r-panel);
+	overflow: hidden;
+}
+
+.wps-app .wps-panel__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 14px 20px;
+	border-bottom: 1px solid var(--wps-line);
+}
+
+.wps-app .wps-panel__head h2 {
+	margin: 0;
+	padding: 0;
+	font-family: inherit;
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.5;
+	color: var(--wps-ink);
+}
+
+.wps-app .wps-panel__body {
+	padding: 20px;
+}
+
+.wps-app .wps-section {
+	margin-top: 16px;
+}
+
+.wps-app .wps-grid {
+	display: grid;
+	gap: 16px;
+	margin-top: 16px;
+}
+
+.wps-app .wps-grid--2-1 {
+	grid-template-columns: 2fr 1fr;
+}
+
+.wps-app .wps-grid--1-3 {
+	grid-template-columns: 220px 1fr;
+	align-items: start;
+}
+
+.wps-app .wps-grid--flush {
+	margin-top: 0;
+}
+
+.wps-app .wps-grid > .wps-panel {
+	min-width: 0;
+}
+
+/* ---------- KPI strip: one joined panel, hairline dividers ---------- */
+
+.wps-app .wps-kpis {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 1px;
+	background: var(--wps-line);
+	border: 1px solid var(--wps-line);
+	border-radius: var(--wps-r-panel);
+	overflow: hidden;
+}
+
+.wps-app .wps-kpis--single {
+	grid-template-columns: 1fr;
+}
+
+.wps-app .wps-kpi {
+	padding: 18px 22px;
+	background: var(--wps-surface);
+}
+
+.wps-app .wps-kpi__label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--wps-muted);
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.wps-app .wps-kpi__value {
+	margin-top: 2px;
+	font-size: 30px;
+	font-weight: 700;
+	line-height: 1.4;
+	font-variant-numeric: tabular-nums;
+}
+
+/* Live indicator: the only ambient motion in the UI. */
+.wps-app .wps-live {
+	position: relative;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--wps-good);
+}
+
+.wps-app .wps-live::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	background: var(--wps-good);
+	animation: wps-pulse 2s ease-out infinite;
+}
+
+@keyframes wps-pulse {
+	from { transform: scale(1); opacity: 0.55; }
+	to   { transform: scale(2.8); opacity: 0; }
+}
+
+/* ---------- Charts ---------- */
+
+.wps-app .wps-chart {
+	position: relative;
+	height: 280px;
+}
+
+.wps-app .wps-chart--short {
+	height: 240px;
+}
+
+/* ---------- Tables ---------- */
+
+.wps-app .wps-table-wrap {
+	overflow-x: auto;
+}
+
+.wps-app .wps-table {
+	width: 100%;
+	border-collapse: collapse;
+	background: transparent;
+}
+
+.wps-app .wps-table th,
+.wps-app .wps-table td {
+	padding: 12px 20px;
+	border: 0;
+	border-bottom: 1px solid var(--wps-line-soft);
+	text-align: start;
+	vertical-align: middle;
+}
+
+.wps-app .wps-table thead th {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background: var(--wps-wash);
+	border-bottom: 1px solid var(--wps-line);
+	color: var(--wps-muted);
+	font-size: 12.5px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.wps-app .wps-table tbody tr:last-child td {
+	border-bottom: 0;
+}
+
+.wps-app .wps-table tbody tr:hover td {
+	background: #fafbfc;
+}
+
+/* Numbers hug the start (right, in RTL) edge: same edge as the header, right edges line up by
+   place value, and the figure sits over the origin of its bar. */
+.wps-app .wps-table .is-num {
+	text-align: start;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.wps-app .wps-table a {
+	color: var(--wps-accent-strong);
+	font-weight: 500;
+	text-decoration: none;
+}
+
+.wps-app .wps-table a:hover {
+	text-decoration: underline;
+}
+
+.wps-app .wps-table code {
+	padding: 2px 6px;
+	background: var(--wps-wash);
+	border-radius: 6px;
+	font-size: 12.5px;
+	direction: ltr;
+	display: inline-block;
+	unicode-bidi: isolate;
+}
+
+/* ---------- Channel identity: the colour that follows a source everywhere ---------- */
+
+.wps-app .wps-chan {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	white-space: nowrap;
+}
+
+.wps-app .wps-chan::before {
+	content: '';
+	flex: none;
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: var(--c, #adb5bd);
+}
+
+.wps-app .wps-chan__n {
+	color: var(--wps-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.wps-app .wps-chans {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-width: 220px;
+	max-width: 320px;
+}
+
+.wps-app .wps-chans__list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 14px;
+	font-size: 13px;
+}
+
+/* Stacked share bar: segment width is proportional to the value. */
+.wps-app .wps-share {
+	display: flex;
+	gap: 2px;
+	height: 8px;
+	border-radius: 999px;
+	overflow: hidden;
+	background: var(--wps-wash);
+}
+
+.wps-app .wps-share i {
+	flex: var(--v, 1) 1 0;
+	min-width: 3px;
+	background: var(--c, #adb5bd);
+}
+
+.wps-app .wps-share--lg {
+	height: 14px;
+}
+
+.wps-app .wps-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 24px;
+	margin-top: 16px;
+	font-size: 13px;
+}
+
+/* Number with a thin proportional bar under it. */
+.wps-app .wps-cell-bar {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 5px;
+	min-width: 96px;
+}
+
+.wps-app .wps-meter {
+	display: block;
+	width: 100%;
+	height: 4px;
+	border-radius: 2px;
+	background: var(--wps-line-soft);
+	overflow: hidden;
+}
+
+.wps-app .wps-meter i {
+	display: block;
+	width: var(--w, 0%);
+	height: 100%;
+	border-radius: 2px;
+	background: var(--c, var(--wps-accent));
+}
+
+.wps-app .wps-tag {
+	display: inline-block;
+	padding: 1px 10px;
+	border-radius: 999px;
+	background: var(--wps-wash);
+	border: 1px solid var(--wps-line);
+	color: var(--wps-muted);
+	font-size: 12px;
+}
+
+.wps-app .wps-pill {
+	display: inline-block;
+	padding: 1px 10px;
+	border-radius: 999px;
+	background: var(--wps-accent-tint);
+	color: var(--wps-accent-strong);
+	font-size: 12.5px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.wps-app .wps-pill--zero {
+	background: var(--wps-wash);
+	color: var(--wps-muted);
+	font-weight: 500;
+}
+
+/* ---------- Empty states ---------- */
+
+.wps-app .wps-empty {
+	padding: 36px 20px;
+	text-align: center;
+	color: var(--wps-muted);
+}
+
+.wps-app .wps-empty strong {
+	display: block;
+	color: var(--wps-ink);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.wps-app .wps-empty span {
+	font-size: 13px;
+}
+
+/* Table cells that hold an empty state should not get the hover tint. */
+.wps-app .wps-table tbody tr:hover td.wps-table__empty {
+	background: transparent;
+}
+
+.wps-app .wps-table td.wps-table__empty {
+	padding: 0;
+}
+
+/* ---------- Forms ---------- */
+
+.wps-app .wps-field {
+	display: grid;
+	grid-template-columns: 260px 1fr;
+	gap: 6px 32px;
+	padding: 20px;
+	border-bottom: 1px solid var(--wps-line-soft);
+}
+
+.wps-app .wps-field:last-child {
+	border-bottom: 0;
+}
+
+.wps-app .wps-field__label {
+	font-weight: 600;
+	padding-top: 6px;
+}
+
+.wps-app .wps-field__label small {
+	display: block;
+	margin-top: 2px;
+	color: var(--wps-muted);
+	font-size: 12.5px;
+	font-weight: 400;
+}
+
+.wps-app .wps-field__control {
+	min-width: 0;
+	max-width: 620px;
+}
+
+.wps-app .wps-help {
+	margin: 8px 0 0;
+	color: var(--wps-muted);
+	font-size: 13px;
+}
+
+.wps-app input[type="text"].wps-input,
+.wps-app input[type="number"].wps-input,
+.wps-app input[type="date"].wps-input,
+.wps-app select.wps-input,
+.wps-app textarea.wps-input {
+	width: 100%;
+	max-width: 100%;
+	min-height: 38px;
+	padding: 6px 12px;
+	border: 1px solid var(--wps-line);
+	border-radius: var(--wps-r-ctl);
+	background-color: var(--wps-surface);
+	color: var(--wps-ink);
+	font: inherit;
+	font-size: 14px;
+	box-shadow: none;
+	transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.wps-app input.wps-input:focus,
+.wps-app select.wps-input:focus,
+.wps-app textarea.wps-input:focus {
+	border-color: var(--wps-accent);
+	box-shadow: 0 0 0 3px var(--wps-accent-tint);
+	outline: none;
+}
+
+.wps-app .wps-input--sm {
+	width: 120px !important;
+}
+
+.wps-app .wps-input--date {
+	width: auto !important;
+	min-height: 34px !important;
+}
+
+.wps-app .wps-input--code {
+	font-family: ui-monospace, Consolas, monospace !important;
+	font-size: 13px !important;
+	direction: ltr;
+	text-align: left;
+}
+
+.wps-app textarea.wps-input {
+	line-height: 1.7;
+	resize: vertical;
+}
+
+/* Toggle switch (still a real checkbox underneath). */
+.wps-app .wps-switch {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	cursor: pointer;
+}
+
+.wps-app .wps-switch input {
+	position: absolute;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
+}
+
+.wps-app .wps-switch__track {
+	position: relative;
+	flex: none;
+	width: 40px;
+	height: 22px;
+	border-radius: 999px;
+	background: #c5cbd4;
+	transition: background-color 0.15s;
+}
+
+.wps-app .wps-switch__track::after {
+	content: '';
+	position: absolute;
+	top: 3px;
+	inset-inline-start: 3px;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: #fff;
+	transition: inset-inline-start 0.15s;
+}
+
+.wps-app .wps-switch input:checked + .wps-switch__track {
+	background: var(--wps-accent);
+}
+
+.wps-app .wps-switch input:checked + .wps-switch__track::after {
+	inset-inline-start: 21px;
+}
+
+.wps-app .wps-switch input:focus-visible + .wps-switch__track {
+	outline: 2px solid var(--wps-accent);
+	outline-offset: 2px;
+}
+
+.wps-app .wps-form__foot {
+	display: flex;
+	justify-content: flex-start;
+	padding: 16px 20px;
+	background: var(--wps-wash);
+	border-top: 1px solid var(--wps-line);
+}
+
+/* Campaign link output */
+.wps-app .wps-copy {
+	display: flex;
+	gap: 8px;
+}
+
+.wps-app .wps-copy .wps-input {
+	flex: 1;
+}
+
+.wps-app .wps-copied {
+	color: var(--wps-good);
+	font-size: 13px;
+	font-weight: 600;
+	opacity: 0;
+	transition: opacity 0.15s;
+}
+
+.wps-app .wps-copied.is-visible {
+	opacity: 1;
+}
+
+.wps-app .wps-copy-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-top: 10px;
+	min-height: 24px;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1000px) {
+	.wps-app .wps-grid--2-1,
+	.wps-app .wps-grid--1-3 {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 782px) {
+	.wps-app {
+		margin: 12px 10px 32px 10px;
+	}
+
+	.wps-app .wps-kpis:not(.wps-kpis--single) {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.wps-app .wps-field {
+		grid-template-columns: 1fr;
+	}
+
+	.wps-app .wps-table th,
+	.wps-app .wps-table td {
+		padding: 10px 14px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wps-app .wps-live::after {
+		animation: none;
+		opacity: 0;
+	}
+
+	.wps-app * {
+		transition: none !important;
+	}
+}
